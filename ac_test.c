@@ -2,8 +2,6 @@
 #include <string.h>
 #include "ac.h"
 
-#define DEBUG
-
 char *text_book[] = {
 "ll_file_open",
 "ll_layout_restore",
@@ -46,6 +44,7 @@ NULL
 static void test_match_front()
 {
 	struct ac_dict *dict;
+	struct ac_dict *filter_dict = NULL;
 	int i, ret;
 
 	printf("Start front match test==========\n");
@@ -66,26 +65,50 @@ static void test_match_front()
 	if (ret)
 		goto out;
 	i = 0;
-#ifdef DEBUG
 	ac_verify(dict->root);
 	ac_dump_words(dict->root);
-#endif
+	filter_dict = ac_create_dict();
+	if (!filter_dict)
+		goto out;
 	printf("step4...\n");
 	while (text_book[i]) {
-		ret = ac_match(dict, text_book[i], MATCH_FRONT);
-		if (!ret)
+		char *text = text_book[i];
+
+		ret = ac_match(dict, text, MATCH_FRONT);
+		if (!ret) {
 			printf("matched text:%s\n", text_book[i]);
+			ac_add_word(filter_dict, text, strlen(text));
+		}
 		i++;
 	}
+    	ret = ac_build_automation(filter_dict);
+	if (ret)
+		goto out;
+	i = 0;
+	printf("step4.a...\n");
+	while (text_book[i]) {
+		char *text = text_book[i];
+
+		ret = ac_match(filter_dict, text, MATCH_FULL);
+		if (!ret) {
+			printf("matched text again:%s\n", text_book[i]);
+		}
+		i++;
+	}
+
+
 out:
 	printf("step5...\n");
 	ac_destory_dict(dict);
+	if (filter_dict)
+		ac_destory_dict(filter_dict);
 	printf("End front match test==========\n");
 }
 
 static void test_match_mid_full()
 {
 	struct ac_dict *dict;
+	struct ac_dict *filter_dict = NULL;
 	int i, ret;
 
 	printf("Start mid/full match test==========\n");
@@ -105,27 +128,51 @@ static void test_match_mid_full()
     	ret = ac_build_automation(dict);
 	if (ret)
 		goto out;
-#ifdef DEBUG
 	ac_verify(dict->root);
 	ac_dump_words(dict->root);
-#endif
+	filter_dict = ac_create_dict();
+	if (!filter_dict)
+		goto out;
 	i = 0;
 	printf("step4...\n");
 	while (text_book[i]) {
-		ret = ac_match(dict, text_book[i], MATCH_MIDDLE);
-		if (!ret)
-			printf("matched text:%s\n", text_book[i]);
+		char *text = text_book[i];
+		
+		ret = ac_match(dict, text, MATCH_MIDDLE);
+		if (!ret) {
+			printf("matched text:%s\n", text);
+			ac_add_word(filter_dict, text, strlen(text));
+		}
 		i++;
 	}
+
+    	ret = ac_build_automation(filter_dict);
+	if (ret)
+		goto out;
+	i = 0;
+	printf("step4.a...\n");
+	while (text_book[i]) {
+		char *text = text_book[i];
+
+		ret = ac_match(filter_dict, text, MATCH_FULL);
+		if (!ret) {
+			printf("matched text again:%s\n", text_book[i]);
+		}
+		i++;
+	}
+
 out:
 	printf("step5...\n");
 	ac_destory_dict(dict);
+	if (filter_dict)
+		ac_destory_dict(filter_dict);
 	printf("End mid/full match test==========\n");
 }
 
 static void test_match_end()
 {
 	struct ac_dict *dict;
+	struct ac_dict *filter_dict = NULL;
 	int i, ret;
 
 	printf("Start front match test==========\n");
@@ -142,24 +189,47 @@ static void test_match_end()
 	if (ret)
 		goto out;
 	printf("step3...\n");
-    	ret = ac_build_automation(dict);
+	ret = ac_build_automation(dict);
 	if (ret)
 		goto out;
 	i = 0;
-#ifdef DEBUG
 	ac_verify(dict->root);
 	ac_dump_words(dict->root);
-#endif
+	filter_dict = ac_create_dict();
+	if (!filter_dict)
+		goto out;
 	printf("step4...\n");
 	while (text_book[i]) {
-		ret = ac_match(dict, text_book[i], MATCH_END);
-		if (!ret)
-			printf("matched text:%s\n", text_book[i]);
+		char *text = text_book[i];
+
+		ret = ac_match(dict, text, MATCH_END);
+		if (!ret) {
+			printf("matched text:%s\n", text);
+			ac_add_word(filter_dict, text, strlen(text));
+		}
 		i++;
 	}
+
+	ret = ac_build_automation(filter_dict);
+	if (ret)
+		goto out;
+	i = 0;
+	printf("step4.a...\n");
+	while (text_book[i]) {
+		char *text = text_book[i];
+
+		ret = ac_match(filter_dict, text, MATCH_FULL);
+		if (!ret) {
+			printf("matched text again:%s\n", text_book[i]);
+		}
+		i++;
+	}
+
 out:
 	printf("step5...\n");
 	ac_destory_dict(dict);
+	if (filter_dict)
+		ac_destory_dict(filter_dict);
 	printf("End front match test==========\n");
 }
 

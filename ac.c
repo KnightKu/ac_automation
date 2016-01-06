@@ -7,6 +7,7 @@
 #define ROOT_CHAR    (0xFFFFFFFF)
 #define AC_CHILD_NUM (100)
 #define QLENGTH  5000000
+#define DEBUG
 
 struct ac_node* ac_create_node(unsigned int value)
 {
@@ -327,7 +328,9 @@ int ac_match(struct ac_dict* dict, char* text, enum MAT_TYPE type)
 		next = ac_has_child(node, val);
 		node = (next == NULL)? dict->root : next;
 		if(node->flag) {
+#ifdef DEBUG
 			ac_print_node(node);
+#endif
 			/* MATCH_FRONT check */
 			if (type == MATCH_FRONT || type == MATCH_END) {
 				if (node->depth == (i + 1)) {
@@ -354,6 +357,7 @@ void ac_destory_dict(struct ac_dict* dict)
 	free(dict);
 }
 
+#ifdef DEBUG
 void ac_dump_words(struct ac_node *node)
 {
 	size_t k;
@@ -368,3 +372,6 @@ void ac_dump_words(struct ac_node *node)
 		ac_dump_words(node->children[k]);
 	}
 }
+#elif
+void ac_dump_words(struct ac_node *node) {}
+#endif
