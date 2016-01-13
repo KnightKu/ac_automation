@@ -7,7 +7,7 @@
 #define ROOT_CHAR    (0xFFFFFFFF)
 #define AC_CHILD_NUM (100)
 #define QLENGTH  5000000
-#define DEBUG
+//#define DEBUG
 
 struct ac_node* ac_create_node(unsigned int value)
 {
@@ -357,7 +357,7 @@ void ac_destory_dict(struct ac_dict* dict)
 	free(dict);
 }
 
-#ifdef DEBUG
+#ifndef DEBUG
 void ac_dump_words(struct ac_node *node)
 {
 	size_t k;
@@ -372,6 +372,6 @@ void ac_dump_words(struct ac_node *node)
 		ac_dump_words(node->children[k]);
 	}
 }
-#elif
+#else
 void ac_dump_words(struct ac_node *node) {}
 #endif
